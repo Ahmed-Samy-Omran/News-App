@@ -25,6 +25,7 @@ class ApiManager {
                 val client = OkHttpClient.Builder()
                     .addInterceptor(logging)
                     .build()
+
                 retrofit=Retrofit.Builder()
                     .baseUrl(Base_URL)
                     .client(client)
