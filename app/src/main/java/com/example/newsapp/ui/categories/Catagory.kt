@@ -1,4 +1,4 @@
-package com.example.newsapp.ui
+package com.example.newsapp.ui.categories
 
 //data class describe catagory then create adapter
 data class Catagory ( // i write every thing i have in design and take obj from it

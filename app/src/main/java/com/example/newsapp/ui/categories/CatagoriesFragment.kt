@@ -1,4 +1,4 @@
-package com.example.newsapp.ui
+package com.example.newsapp.ui.categories
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -29,7 +29,7 @@ class CatagoriesFragment:Fragment() {
     )
     // i create onViewCreated to work on it
     lateinit var recyclerView: RecyclerView
-    val adapter=CategoriesAdapter(categories)
+    val adapter= CategoriesAdapter(categories)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initRecyclerView()
@@ -38,7 +38,7 @@ class CatagoriesFragment:Fragment() {
     private fun initRecyclerView() {
        recyclerView=requireView().findViewById(R.id.recycler_view)
         recyclerView.adapter=adapter
-        adapter.onItemClickListener= object :CategoriesAdapter.OnItemClickListener{
+        adapter.onItemClickListener= object : CategoriesAdapter.OnItemClickListener{
             override fun onItemClick(pos: Int, item: Catagory) {
                 onCategoryClickListener?.onCategoryClick(catagory = item)
                 // i take call back and connect it to another call back to return item
@@ -46,7 +46,7 @@ class CatagoriesFragment:Fragment() {
         }
     }
 
-    var onCategoryClickListener:OnCategoryClickListener?=null
+    var onCategoryClickListener: OnCategoryClickListener?=null
     interface OnCategoryClickListener{
         fun onCategoryClick(catagory: Catagory) // it need category i clicked it only i dont need postion
     }

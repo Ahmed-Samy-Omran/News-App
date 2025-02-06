@@ -1,29 +1,21 @@
-package com.example.newsapp
+package com.example.newsapp.ui.home
 
 import android.os.Bundle
-import android.view.Menu
 import android.view.View
 import android.widget.ImageView
-import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.navigation.NavigationView
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.navigation.NavBackStackEntry
-import com.example.newsapp.ui.CatagoriesFragment
-import com.example.newsapp.ui.Catagory
-import com.example.newsapp.ui.NewsFragment
+import com.example.newsapp.R
+import com.example.newsapp.ui.categories.CatagoriesFragment
+import com.example.newsapp.ui.categories.Catagory
+import com.example.newsapp.ui.news.NewsFragment
 import com.example.newsapp.ui.SettingsFragment
 
 
 class HomeActivity : AppCompatActivity() {
 // create obj from catagoriesFragment to can push fragment when i start the program
-    val catagoriesFragment =CatagoriesFragment();
+    val catagoriesFragment = CatagoriesFragment();
     val settingsFragment =SettingsFragment()
     lateinit var drawerLayout: DrawerLayout
     lateinit var drawerIcon:ImageView
@@ -38,7 +30,7 @@ class HomeActivity : AppCompatActivity() {
         settings=findViewById(R.id.settings)
         categories=findViewById(R.id.categories)
         pushFragment(catagoriesFragment)
-        catagoriesFragment.onCategoryClickListener=object :CatagoriesFragment.OnCategoryClickListener{
+        catagoriesFragment.onCategoryClickListener=object : CatagoriesFragment.OnCategoryClickListener{
             override fun onCategoryClick(catagory: Catagory) {
                 pushFragment(NewsFragment.getInstance(catagory),true)
             }

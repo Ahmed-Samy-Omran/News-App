@@ -1,4 +1,4 @@
-package com.example.newsapp.ui
+package com.example.newsapp.ui.categories
 
 import android.view.LayoutInflater
 import android.view.View
@@ -44,9 +44,9 @@ class CategoriesAdapter(val categories:List<Catagory>):RecyclerView.Adapter<Cate
         }
     }
 
-    var onItemClickListener:OnItemClickListener?=null
+    var onItemClickListener: OnItemClickListener?=null
     interface OnItemClickListener{
-        fun onItemClick(pos:Int,item:Catagory)
+        fun onItemClick(pos:Int,item: Catagory)
     }
 
     override fun getItemCount(): Int =categories.size
