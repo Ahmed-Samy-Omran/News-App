@@ -6,10 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.example.newsapp.R
+import com.example.newsapp.api.RetrofitBuilder
 import com.example.newsapp.model.SourcesItem
 
 import com.example.newsapp.ui.categories.Catagory
@@ -29,7 +32,9 @@ class NewsFragment:Fragment() {
     }
 
     lateinit var catagory: Catagory
-    private val viewModel: NewsViewModel by viewModels()
+    private val viewModel: NewsViewModel by viewModels {
+        NewsViewModel.NewsViewModelFactory(NewsRepositoryImpl(RetrofitBuilder.retrofitInstance))
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -45,9 +50,8 @@ class NewsFragment:Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
-        viewModel.getNewsSources(catagory) { sources ->
-            showTabs(sources)
-        }
+        observeViewModel()
+        viewModel.getNewsSources(catagory)
     }
 
     private fun initView(){
@@ -79,5 +83,19 @@ class NewsFragment:Fragment() {
             }
         )
         tabLayout.getTabAt(0)?.select()
+    }
+
+    private fun observeViewModel() {
+        viewModel.newsSourcesLiveData.observe(viewLifecycleOwner, Observer { sources ->
+            showTabs(sources)
+        })
+
+        viewModel.newsArticlesLiveData.observe(viewLifecycleOwner, Observer { articles ->
+            adapter.changeData(articles)
+        })
+
+        viewModel.isLoading.observe(viewLifecycleOwner, Observer { isLoading ->
+            progressBar.isVisible = isLoading
+        })
     }
 }

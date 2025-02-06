@@ -12,9 +12,6 @@ import com.example.newsapp.model.ArticlesItem
 
 class NewsAdapter(var items:List<ArticlesItem?>?=null):RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
 
-
-
-
     class ViewHolder(itemView:View):RecyclerView.ViewHolder(itemView){
         val title:TextView=itemView.findViewById(R.id.title)
         val image:ImageView=itemView.findViewById(R.id.image)

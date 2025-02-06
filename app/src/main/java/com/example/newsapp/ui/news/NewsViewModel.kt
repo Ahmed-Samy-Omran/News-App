@@ -3,31 +3,46 @@ package com.example.newsapp.ui.news
 import android.content.Context
 import android.util.Log
 import android.view.View
-import android.widget.ProgressBar
 import android.widget.Toast
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.RecyclerView
 import com.example.newsapp.Constants
-import com.example.newsapp.api.ApiManager
+import com.example.newsapp.api.RetrofitBuilder
+import com.example.newsapp.model.ArticlesItem
 import com.example.newsapp.model.NewsResponse
 import com.example.newsapp.model.SourceResponse
 import com.example.newsapp.model.SourcesItem
 import com.example.newsapp.ui.categories.Catagory
 import com.google.android.material.tabs.TabLayout
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class NewsViewModel: ViewModel() {
+class NewsViewModel(private val repository: NewsRepository): ViewModel() {
 
     private lateinit var progressBar: View
     private lateinit var tabLayout: TabLayout
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: NewsAdapter
     private lateinit var context: Context
+
+    // Internal mutable LiveData
+    private val _newsSourcesLiveData = MutableLiveData<List<SourcesItem?>>()
+    private val _newsArticlesLiveData = MutableLiveData<List<ArticlesItem?>>()
+    private val _isLoading = MutableLiveData<Boolean>()
+
+    // Exposing immutable LiveData
+    val newsSourcesLiveData: LiveData<List<SourcesItem?>> get() = _newsSourcesLiveData
+    val newsArticlesLiveData: LiveData<List<ArticlesItem?>> get() = _newsArticlesLiveData
+    val isLoading: LiveData<Boolean> get() = _isLoading
 
     fun initView(
         progressBar: View,
@@ -41,46 +56,65 @@ class NewsViewModel: ViewModel() {
         this.adapter = recyclerView.adapter as NewsAdapter
         this.context = context
     }
-    fun loadNews(source: SourcesItem){
+
+    fun loadNews(source: SourcesItem) {
         adapter.changeData(null)
-        progressBar.isVisible=true
-        ApiManager.getApis().getNews(Constants.apiKey,source.id?:"").enqueue(
-            object : Callback<NewsResponse> {
-                override fun onResponse(call: Call<NewsResponse>, response: Response<NewsResponse>) {
-                    progressBar.isVisible=false
-                    adapter.changeData(response.body()?.articles)
-
-                }
-
-                override fun onFailure(call: Call<NewsResponse>, t: Throwable) {
-                    Toast.makeText(context,"Error loading news", Toast.LENGTH_LONG).show()
-                    progressBar.isVisible=false
-
-                }
-
+        _isLoading.value = true
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val response = repository.getNews(Constants.apiKey, source.id ?: "")
+                _newsArticlesLiveData.postValue(response.articles ?: emptyList())
+            } catch (e: Exception) {
+                showError("Error loading news")
+            } finally {
+                _isLoading.postValue(false)
             }
-        )
+        }
     }
 
-    fun getNewsSources(catagory: Catagory, callback: (List<SourcesItem?>?) -> Unit) {
-        progressBar.isVisible = true
-        ApiManager.getApis().getNewsSources(Constants.apiKey, catagory.id)
-            .enqueue(object : Callback<SourceResponse> {
-                override fun onFailure(call: Call<SourceResponse>, t: Throwable) {
-                    progressBar.isVisible = false
+    fun getNewsSources(catagory: Catagory) {
+        _isLoading.value = true
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val response = repository.getNewsSources(Constants.apiKey, catagory.id)
+                if (response.sources.isNullOrEmpty()) {
+                    Log.e("getNewsSources", "No sources found for category: ${catagory.id}")
+                } else {
+                    withContext(Dispatchers.Main) {
+                        _newsSourcesLiveData.postValue(response.sources ?: emptyList())
+                        Log.d("getNewsSources", "Sources loaded: ${response.sources.size}")
+                        // Load news for the first source
+                        response.sources.firstOrNull()?.let { loadNews(it) }
+                    }
                 }
-
-                override fun onResponse(
-                    call: Call<SourceResponse>,
-                    response: Response<SourceResponse>
-                ) {
-                    progressBar.isVisible = false
-                    callback(response.body()?.sources)
-                    Log.e("response", response.body().toString())
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Log.e("getNewsSources", "Error loading news sources: ${e.message}", e)
+                    showError("Error loading news sources: ${e.message}")
                 }
-            })
+            } finally {
+                withContext(Dispatchers.Main) {
+                    _isLoading.postValue(false)
+                }
+            }
+        }
     }
 
+    private fun showError(message: String) {
+        viewModelScope.launch(Dispatchers.Main) {
+            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+        }
+    }
 
+    class NewsViewModelFactory(private val repository: NewsRepository) : ViewModelProvider.Factory {
+
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            if (modelClass.isAssignableFrom(NewsViewModel::class.java)) {
+                @Suppress("UNCHECKED_CAST")
+                return NewsViewModel(repository) as T
+            }
+            throw IllegalArgumentException("Unknown ViewModel class")
+        }
+    }
 
 }

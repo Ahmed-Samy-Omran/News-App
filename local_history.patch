@@ -1,0 +1,16 @@
+Index: app/src/main/java/com/example/newsapp/api/ApiManager.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/newsapp/api/ApiManager.kt b/app/src/main/java/com/example/newsapp/api/ApiManager.kt
+--- a/app/src/main/java/com/example/newsapp/api/ApiManager.kt	
++++ b/app/src/main/java/com/example/newsapp/api/ApiManager.kt	(date 1738847262901)
+@@ -25,6 +25,7 @@
+                 val client = OkHttpClient.Builder()
+                     .addInterceptor(logging)
+                     .build()
++
+                 retrofit=Retrofit.Builder()
+                     .baseUrl(Base_URL)
+                     .client(client)
