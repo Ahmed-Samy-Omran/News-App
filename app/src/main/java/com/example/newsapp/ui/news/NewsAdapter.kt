@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.newsapp.R
-import com.example.newsapp.model.ArticlesItem
+import com.example.newsapp.data.model.ArticlesItem
 
 class NewsAdapter(var items:List<ArticlesItem?>?=null):RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
 

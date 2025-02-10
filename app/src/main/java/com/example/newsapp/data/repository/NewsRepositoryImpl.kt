@@ -1,10 +1,10 @@
-package com.example.newsapp.ui.news
+package com.example.newsapp.data.repository
 
-import com.example.newsapp.api.ApiServices
-import com.example.newsapp.model.NewsResponse
-import com.example.newsapp.model.SourceResponse
+import com.example.newsapp.data.api.ApiServices
+import com.example.newsapp.data.model.NewsResponse
+import com.example.newsapp.data.model.SourceResponse
 
-class NewsRepositoryImpl(private val apiServices: ApiServices):NewsRepository {
+class NewsRepositoryImpl(private val apiServices: ApiServices): NewsRepository {
     override suspend fun getNewsSources(apiKey: String, category: String): SourceResponse {
         return apiServices.getNewsSources(apiKey, category)
     }

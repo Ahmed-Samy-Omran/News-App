@@ -1,8 +1,5 @@
-package com.example.newsapp.api
+package com.example.newsapp.data.api
 
-import android.util.Log
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 

@@ -1,7 +1,6 @@
 package com.example.newsapp.ui.news
 
 import   android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,17 +11,19 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.example.newsapp.R
-import com.example.newsapp.api.RetrofitBuilder
-import com.example.newsapp.model.SourcesItem
+import com.example.newsapp.data.api.RetrofitBuilder
+import com.example.newsapp.data.repository.NewsRepositoryImpl
+import com.example.newsapp.data.model.SourcesItem
 
-import com.example.newsapp.ui.categories.Catagory
+import com.example.newsapp.ui.categories.Category
 import com.google.android.material.tabs.TabLayout
+import dagger.hilt.android.AndroidEntryPoint
 
-
+//@AndroidEntryPoint
 class NewsFragment:Fragment() {
 
     companion object{
-        fun getInstance(category: Catagory): NewsFragment {
+        fun getInstance(category: Category): NewsFragment {
             val fragment= NewsFragment()
            fragment.catagory=category
             return fragment
@@ -31,7 +32,7 @@ class NewsFragment:Fragment() {
 
     }
 
-    lateinit var catagory: Catagory
+    lateinit var catagory: Category
     private val viewModel: NewsViewModel by viewModels {
         NewsViewModel.NewsViewModelFactory(NewsRepositoryImpl(RetrofitBuilder.retrofitInstance))
     }

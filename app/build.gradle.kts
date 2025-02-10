@@ -1,11 +1,14 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("com.google.dagger.hilt.android")
+    id ("kotlin-android")
+    id("kotlin-kapt")  // for data binding
 }
 
 android {
     namespace = "com.example.newsapp"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.newsapp"
@@ -35,7 +38,9 @@ android {
     }
     buildFeatures {
         viewBinding = true
+
     }
+
 }
 
 dependencies {
@@ -69,4 +74,17 @@ dependencies {
     // Retrofit Coroutines Adapter
     implementation ("com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2")
 
+
+
+
+    // Dagger Hilt
+    kapt("androidx.hilt:hilt-compiler:1.2.0")
+    implementation("com.google.dagger:hilt-android:2.48")
+    kapt("com.google.dagger:hilt-android-compiler:2.48")
+
 }
+// Allow references to generated code
+kapt {
+    correctErrorTypes = true
+}
+

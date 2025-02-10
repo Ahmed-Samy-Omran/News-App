@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.core.view.isVisible
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,20 +11,17 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.RecyclerView
 import com.example.newsapp.Constants
-import com.example.newsapp.api.RetrofitBuilder
-import com.example.newsapp.model.ArticlesItem
-import com.example.newsapp.model.NewsResponse
-import com.example.newsapp.model.SourceResponse
-import com.example.newsapp.model.SourcesItem
-import com.example.newsapp.ui.categories.Catagory
+import com.example.newsapp.data.repository.NewsRepository
+import com.example.newsapp.data.model.ArticlesItem
+import com.example.newsapp.data.model.SourcesItem
+import com.example.newsapp.ui.categories.Category
 import com.google.android.material.tabs.TabLayout
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
+//@HiltViewModel
 class NewsViewModel(private val repository: NewsRepository): ViewModel() {
 
     private lateinit var progressBar: View
@@ -57,6 +53,7 @@ class NewsViewModel(private val repository: NewsRepository): ViewModel() {
         this.context = context
     }
 
+
     fun loadNews(source: SourcesItem) {
         adapter.changeData(null)
         _isLoading.value = true
@@ -72,7 +69,7 @@ class NewsViewModel(private val repository: NewsRepository): ViewModel() {
         }
     }
 
-    fun getNewsSources(catagory: Catagory) {
+    fun getNewsSources(catagory: Category) {
         _isLoading.value = true
         viewModelScope.launch(Dispatchers.IO) {
             try {

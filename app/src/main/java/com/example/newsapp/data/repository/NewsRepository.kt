@@ -1,7 +1,7 @@
-package com.example.newsapp.ui.news
+package com.example.newsapp.data.repository
 
-import com.example.newsapp.model.NewsResponse
-import com.example.newsapp.model.SourceResponse
+import com.example.newsapp.data.model.NewsResponse
+import com.example.newsapp.data.model.SourceResponse
 
 interface NewsRepository {
     suspend fun getNewsSources(apiKey: String, category: String): SourceResponse

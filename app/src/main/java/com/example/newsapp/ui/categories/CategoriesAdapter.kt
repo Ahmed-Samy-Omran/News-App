@@ -6,63 +6,60 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.newsapp.R
 import com.google.android.material.card.MaterialCardView
 
-class CategoriesAdapter(val categories:List<Catagory>):RecyclerView.Adapter<CategoriesAdapter.ViewHolder> (){
+class CategoriesAdapter(
+    private val onItemClick: (Category) -> Unit
+) : ListAdapter<Category, CategoriesAdapter.ViewHolder>(CategoryDiffCallback()) {
 
-    class ViewHolder(itemView:View):RecyclerView.ViewHolder(itemView){
-        val title:TextView=itemView.findViewById(R.id.title)
-        val image:ImageView=itemView.findViewById(R.id.image)
-        val parent:MaterialCardView=itemView.findViewById(R.id.parent)
-        val child:ConstraintLayout=itemView.findViewById(R.id.child)
+    companion object {
+        private const val LEFT_SIDED = 10
+        private const val RIGHT_SIDED = 20
+    }
+
+    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val title: TextView = view.findViewById(R.id.title)
+        val image: ImageView = view.findViewById(R.id.image)
+        val parent: MaterialCardView = view.findViewById(R.id.parent)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view=LayoutInflater.from(parent.context)
-            .inflate(
-                if (viewType==isLeftSided)
-                    R.layout.item_catagory_left_side
-                else
-                    R.layout.item_catagory_right_side
-
-
-
-                ,parent,false)
+        val layout = if (viewType == LEFT_SIDED) {
+            R.layout.item_catagory_left_side
+        } else {
+            R.layout.item_catagory_right_side
+        }
+        val view = LayoutInflater.from(parent.context).inflate(layout, parent, false)
         return ViewHolder(view)
     }
-        val isLeftSided=10
-        val isRightSided=20
+
     override fun getItemViewType(position: Int): Int {
-        if (position%2==0){
-            return isLeftSided
-        }
-        else
-        {
-            return isRightSided
-        }
+        return if (position % 2 == 0) LEFT_SIDED else RIGHT_SIDED
     }
-
-    var onItemClickListener: OnItemClickListener?=null
-    interface OnItemClickListener{
-        fun onItemClick(pos:Int,item: Catagory)
-    }
-
-    override fun getItemCount(): Int =categories.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val category = getItem(position)
 
-        val cat=categories[position]
-        holder.title.setText(cat.titleId)
-        holder.image.setImageResource(cat.imageId)
-        holder.parent.setCardBackgroundColor(holder.parent.context?.getColor(cat.backgroundColor)?:0)
-        //in case onItemClickListener not null
-        onItemClickListener?.let {
+        holder.apply {
+            title.setText(category.titleId)
+            image.setImageResource(category.imageId)
+            parent.setCardBackgroundColor(parent.context.getColor(category.backgroundColor))
+            itemView.setOnClickListener { onItemClick(category) }
+        }
+    }
+}
 
-        holder.itemView.setOnClickListener {
-            onItemClickListener?.onItemClick(position,cat)
-        }
-        }
+// DiffUtil to optimize item updates
+class CategoryDiffCallback : DiffUtil.ItemCallback<Category>() {
+    override fun areItemsTheSame(oldItem: Category, newItem: Category): Boolean {
+        return oldItem.id == newItem.id
+    }
+
+    override fun areContentsTheSame(oldItem: Category, newItem: Category): Boolean {
+        return oldItem == newItem
     }
 }
