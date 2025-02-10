@@ -11,9 +11,10 @@ import com.example.newsapp.ui.categories.CategoriesFragment
 import com.example.newsapp.ui.categories.Category
 import com.example.newsapp.ui.news.NewsFragment
 import com.example.newsapp.ui.SettingsFragment
+import dagger.hilt.android.AndroidEntryPoint
 
 
-//@AndroidEntryPoint
+@AndroidEntryPoint
 class HomeActivity : AppCompatActivity() {
 
 // create obj from categoriesFragment to can push fragment when i start the program

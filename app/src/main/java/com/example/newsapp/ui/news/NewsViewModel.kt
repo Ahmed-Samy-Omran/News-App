@@ -20,13 +20,14 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 //    ViewModel should not manage Views (RecyclerView, TabLayout, ProgressBar).
 //ViewModel should not depend on Context
 //ViewModels should not hold UI references (like View, RecyclerView, or Context).
 
-//@HiltViewModel
-class NewsViewModel(private val repository: NewsRepository) : ViewModel() {
+@HiltViewModel
+class NewsViewModel @Inject constructor(private val repository: NewsRepository) : ViewModel() {
 
     private val _newsSourcesLiveData = MutableLiveData<List<SourcesItem?>>()
     private val _newsArticlesLiveData = MutableLiveData<List<ArticlesItem?>>()
@@ -77,13 +78,4 @@ class NewsViewModel(private val repository: NewsRepository) : ViewModel() {
         }
     }
 
-    class NewsViewModelFactory(private val repository: NewsRepository) : ViewModelProvider.Factory {
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass.isAssignableFrom(NewsViewModel::class.java)) {
-                @Suppress("UNCHECKED_CAST")
-                return NewsViewModel(repository) as T
-            }
-            throw IllegalArgumentException("Unknown ViewModel class")
-        }
-    }
 }

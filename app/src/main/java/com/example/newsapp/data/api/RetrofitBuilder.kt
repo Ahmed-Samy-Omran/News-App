@@ -8,42 +8,19 @@ object RetrofitBuilder {
 
     private const val BASE_URL = "https://newsapi.org/"
 
-    val retrofitInstance: ApiServices by lazy {
-        Retrofit.Builder().baseUrl(BASE_URL)
+
+    val retrofitInstance: Retrofit by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(ApiServices::class.java)
     }
 
-//    companion object{
-//        private val Base_URL="https://newsapi.org/"
-//        private var retrofit:Retrofit?=null
-//        private fun getInstance():Retrofit{ // this fun return instance/obj from retrofit in case it = null in other case it work on the same retrofit
-//            if (retrofit==null){
-//                //create Retrofit
-//                val logging = HttpLoggingInterceptor(
-//                    object :HttpLoggingInterceptor.Logger{
-//                        override fun log(message: String) {
-//                            Log.e("api",message)
-//                        }
-//                    }
-//                )
-//                logging.setLevel(HttpLoggingInterceptor.Level.BODY)
-//                val client = OkHttpClient.Builder()
-//                    .addInterceptor(logging)
-//                    .build()
-//
-//                retrofit=Retrofit.Builder()
-//                    .baseUrl(Base_URL)
-//                    .client(client)
-//                    .addConverterFactory(GsonConverterFactory.create())
-//                    .build()
-//            }
-//            return retrofit!!;
-//
-//        }
-//        fun getApis():Services{
-//            return getInstance().create(Services::class.java)
-//        }
-//    }
+    val apiService: ApiServices by lazy {
+        retrofitInstance.create(ApiServices::class.java)
+    }
+
+
+
+
 }

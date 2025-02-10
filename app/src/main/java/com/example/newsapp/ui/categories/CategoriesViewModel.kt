@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.newsapp.R
+import dagger.hilt.android.lifecycle.HiltViewModel
+
 
 class CategoriesViewModel:ViewModel() {
 
