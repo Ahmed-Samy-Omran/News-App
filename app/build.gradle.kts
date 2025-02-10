@@ -4,6 +4,7 @@ plugins {
     id("com.google.dagger.hilt.android")
     id ("kotlin-android")
     id("kotlin-kapt")  // for data binding
+    id ("kotlin-parcelize")
 }
 
 android {

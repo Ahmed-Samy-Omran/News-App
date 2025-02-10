@@ -21,90 +21,63 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+//    ViewModel should not manage Views (RecyclerView, TabLayout, ProgressBar).
+//ViewModel should not depend on Context
+//ViewModels should not hold UI references (like View, RecyclerView, or Context).
+
 //@HiltViewModel
-class NewsViewModel(private val repository: NewsRepository): ViewModel() {
+class NewsViewModel(private val repository: NewsRepository) : ViewModel() {
 
-    private lateinit var progressBar: View
-    private lateinit var tabLayout: TabLayout
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: NewsAdapter
-    private lateinit var context: Context
-
-    // Internal mutable LiveData
     private val _newsSourcesLiveData = MutableLiveData<List<SourcesItem?>>()
     private val _newsArticlesLiveData = MutableLiveData<List<ArticlesItem?>>()
     private val _isLoading = MutableLiveData<Boolean>()
+    private val _errorMessage = MutableLiveData<String>() // New for error handling
 
-    // Exposing immutable LiveData
     val newsSourcesLiveData: LiveData<List<SourcesItem?>> get() = _newsSourcesLiveData
     val newsArticlesLiveData: LiveData<List<ArticlesItem?>> get() = _newsArticlesLiveData
     val isLoading: LiveData<Boolean> get() = _isLoading
-
-    fun initView(
-        progressBar: View,
-        tabLayout: TabLayout,
-        recyclerView: RecyclerView,
-        context: Context
-    ){
-        this.progressBar=progressBar
-        this.tabLayout=tabLayout
-        this.recyclerView=recyclerView
-        this.adapter = recyclerView.adapter as NewsAdapter
-        this.context = context
-    }
-
+    val errorMessage: LiveData<String> get() = _errorMessage // Observed in UI
 
     fun loadNews(source: SourcesItem) {
-        adapter.changeData(null)
+        _newsArticlesLiveData.value = emptyList()
         _isLoading.value = true
-        viewModelScope.launch(Dispatchers.IO) {
+
+        viewModelScope.launch {
             try {
-                val response = repository.getNews(Constants.apiKey, source.id ?: "")
-                _newsArticlesLiveData.postValue(response.articles ?: emptyList())
+                val response = withContext(Dispatchers.IO) {
+                    repository.getNews(Constants.apiKey, source.id ?: "")
+                }
+                _newsArticlesLiveData.value = response.articles ?: emptyList() // ✅ Runs on Main Thread
             } catch (e: Exception) {
-                showError("Error loading news")
+                _errorMessage.value = "Error loading news: ${e.message}"
+                Log.e("loadNews", "Error: ${e.message}", e)
             } finally {
-                _isLoading.postValue(false)
+                _isLoading.value = false
             }
         }
     }
 
-    fun getNewsSources(catagory: Category) {
+    fun getNewsSources(category: Category) {
         _isLoading.value = true
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             try {
-                val response = repository.getNewsSources(Constants.apiKey, catagory.id)
-                if (response.sources.isNullOrEmpty()) {
-                    Log.e("getNewsSources", "No sources found for category: ${catagory.id}")
-                } else {
-                    withContext(Dispatchers.Main) {
-                        _newsSourcesLiveData.postValue(response.sources ?: emptyList())
-                        Log.d("getNewsSources", "Sources loaded: ${response.sources.size}")
-                        // Load news for the first source
-                        response.sources.firstOrNull()?.let { loadNews(it) }
-                    }
+                val response = withContext(Dispatchers.IO) {
+                    repository.getNewsSources(Constants.apiKey, category.id)
                 }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    Log.e("getNewsSources", "Error loading news sources: ${e.message}", e)
-                    showError("Error loading news sources: ${e.message}")
-                }
-            } finally {
-                withContext(Dispatchers.Main) {
-                    _isLoading.postValue(false)
-                }
-            }
-        }
-    }
+                _newsSourcesLiveData.value = response.sources ?: emptyList()
 
-    private fun showError(message: String) {
-        viewModelScope.launch(Dispatchers.Main) {
-            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                // Load news for the first source (if available)
+                response.sources?.firstOrNull()?.let { loadNews(it) }
+            } catch (e: Exception) {
+                _errorMessage.value = "Error loading sources: ${e.message}"
+                Log.e("getNewsSources", "Error: ${e.message}", e)
+            } finally {
+                _isLoading.value = false
+            }
         }
     }
 
     class NewsViewModelFactory(private val repository: NewsRepository) : ViewModelProvider.Factory {
-
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(NewsViewModel::class.java)) {
                 @Suppress("UNCHECKED_CAST")
@@ -113,5 +86,4 @@ class NewsViewModel(private val repository: NewsRepository): ViewModel() {
             throw IllegalArgumentException("Unknown ViewModel class")
         }
     }
-
 }
