@@ -20,9 +20,10 @@ import com.example.newsapp.data.model.SourcesItem
 
 import com.example.newsapp.ui.categories.Category
 import com.google.android.material.tabs.TabLayout
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
-//@AndroidEntryPoint
+@AndroidEntryPoint
 class NewsFragment : Fragment() {
 
     companion object {
@@ -39,9 +40,7 @@ class NewsFragment : Fragment() {
 
     private lateinit var category: Category
 
-    private val viewModel: NewsViewModel by viewModels {
-        NewsViewModel.NewsViewModelFactory(NewsRepositoryImpl(RetrofitBuilder.retrofitInstance))
-    }
+    private val viewModel: NewsViewModel by viewModels ()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
