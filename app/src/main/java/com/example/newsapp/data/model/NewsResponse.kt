@@ -1,42 +1,42 @@
-package com.example.newsapp.model
+package com.example.newsapp.data.model
 
 import com.google.gson.annotations.SerializedName
 
 data class NewsResponse(
 
-	@field:SerializedName("totalResults")
+    @field:SerializedName("totalResults")
 	val totalResults: Int? = null,
 
-	@field:SerializedName("articles")
+    @field:SerializedName("articles")
 	val articles: List<ArticlesItem?>? = null,
 
 
-):BaseResponse()
+    ): BaseResponse()
 
 data class ArticlesItem(
 
-	@field:SerializedName("publishedAt")
+    @field:SerializedName("publishedAt")
 	val publishedAt: String? = null,
 
-	@field:SerializedName("author")
+    @field:SerializedName("author")
 	val author: String? = null,
 
-	@field:SerializedName("urlToImage")
+    @field:SerializedName("urlToImage")
 	val urlToImage: String? = null,
 
-	@field:SerializedName("description")
+    @field:SerializedName("description")
 	val description: String? = null,
 
-	@field:SerializedName("source")
+    @field:SerializedName("source")
 	val source: SourcesItem? = null,
 
-	@field:SerializedName("title")
+    @field:SerializedName("title")
 	val title: String? = null,
 
-	@field:SerializedName("url")
+    @field:SerializedName("url")
 	val url: String? = null,
 
-	@field:SerializedName("content")
+    @field:SerializedName("content")
 	val content: String? = null
 )
 
