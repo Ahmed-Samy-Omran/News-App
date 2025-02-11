@@ -17,6 +17,7 @@ import com.example.newsapp.R
 import com.example.newsapp.data.api.RetrofitBuilder
 import com.example.newsapp.data.repository.NewsRepositoryImpl
 import com.example.newsapp.data.model.SourcesItem
+import com.example.newsapp.databinding.FragmentNewsBinding
 
 import com.example.newsapp.ui.categories.Category
 import com.google.android.material.tabs.TabLayout
@@ -25,6 +26,9 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class NewsFragment : Fragment() {
+
+    private var _binding: FragmentNewsBinding? = null
+    private val binding get() = _binding!!
 
     companion object {
         private const val CATEGORY_KEY = "category"
@@ -39,8 +43,8 @@ class NewsFragment : Fragment() {
     }
 
     private lateinit var category: Category
-
-    private val viewModel: NewsViewModel by viewModels ()
+    private val viewModel: NewsViewModel by viewModels()
+    private val adapter = NewsAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,37 +57,31 @@ class NewsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.fragment_news, container, false)
+        _binding = FragmentNewsBinding.inflate(inflater, container, false)
+        return binding.root
     }
-
-    private lateinit var progressBar: ProgressBar
-    private lateinit var tabLayout: TabLayout
-    private lateinit var recyclerView: RecyclerView
-    private val adapter = NewsAdapter()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initView(view)
+        initView()
         observeViewModel()
         viewModel.getNewsSources(category)
     }
 
-    private fun initView(view: View) {
-        progressBar = view.findViewById(R.id.progress_bar)
-        tabLayout = view.findViewById(R.id.tab_layout)
-        recyclerView = view.findViewById(R.id.recycler_view)
-        recyclerView.adapter = adapter
+    private fun initView() {
+        binding.recyclerView.adapter = adapter
     }
 
     private fun showTabs(sources: List<SourcesItem?>?) {
         sources?.forEach { item ->
-            val tab = tabLayout.newTab().apply {
+            val tab = binding.tabLayout.newTab().apply {
                 tag = item
                 text = item?.name
             }
-            tabLayout.addTab(tab)
+            binding.tabLayout.addTab(tab)
         }
-        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+
+        binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 val source = tab?.tag as? SourcesItem ?: return
                 viewModel.loadNews(source)
@@ -95,7 +93,7 @@ class NewsFragment : Fragment() {
                 viewModel.loadNews(source)
             }
         })
-        tabLayout.getTabAt(0)?.select()
+        binding.tabLayout.getTabAt(0)?.select()
     }
 
     private fun observeViewModel() {
@@ -110,8 +108,14 @@ class NewsFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-                    progressBar.isVisible = isLoading
+                    binding.progressBar.isVisible = isLoading
                 }
             }
         }
-    }}
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null // Prevents memory leaks
+    }
+}
