@@ -1,12 +1,10 @@
-package com.example.newsapp.ui
+package com.example.newsapp.ui.settings
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.example.newsapp.R
-import com.example.newsapp.databinding.FragmentNewsBinding
 import com.example.newsapp.databinding.FragmentSettingsBinding
 import dagger.hilt.android.AndroidEntryPoint
 
