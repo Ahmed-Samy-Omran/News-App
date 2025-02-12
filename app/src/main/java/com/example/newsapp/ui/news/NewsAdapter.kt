@@ -11,30 +11,27 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.newsapp.R
 import com.example.newsapp.data.model.ArticlesItem
+import com.example.newsapp.databinding.ItemNewsBinding
 
 class NewsAdapter : ListAdapter<ArticlesItem, NewsAdapter.ViewHolder>(NewsDiffCallback()) {
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val title: TextView = itemView.findViewById(R.id.title)
-        private val image: ImageView = itemView.findViewById(R.id.image)
-        private val dateTime: TextView = itemView.findViewById(R.id.datetime)
-        private val author: TextView = itemView.findViewById(R.id.author)
+    class ViewHolder(private val binding: ItemNewsBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: ArticlesItem) {
-            title.text = item.title ?: "No Title"
-            author.text = item.author ?: "Unknown Author"
-            dateTime.text = item.publishedAt ?: "No Date"
+            // Use ViewBinding to access views directly
+            binding.title.text = item.title ?: "No Title"
+            binding.author.text = item.author ?: "Unknown Author"
+            binding.datetime.text = item.publishedAt ?: "No Date"
 
             Glide.with(itemView)
                 .load(item.urlToImage)
-                .into(image)
+                .into(binding.image)
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_news, parent, false)
-        return ViewHolder(view)
+        val binding = ItemNewsBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {

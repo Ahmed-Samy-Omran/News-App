@@ -1,8 +1,10 @@
 package com.example.newsapp.ui.categories
 
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -49,6 +51,12 @@ class CategoriesAdapter(
             image.setImageResource(category.imageId)
             parent.setCardBackgroundColor(parent.context.getColor(category.backgroundColor))
             itemView.setOnClickListener { onItemClick(category) }
+
+            // Apply animation
+            val animation = AnimationUtils.loadAnimation(holder.itemView.context, R.anim.item_slide_in)
+            holder.itemView.startAnimation(animation)
+
+
         }
     }
 }

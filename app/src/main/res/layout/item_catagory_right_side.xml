@@ -5,6 +5,10 @@
     android:id="@+id/parent"
     android:layout_width="match_parent"
 style="@style/rightSidedCardViewStyle"
+    app:cardElevation="8dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:background="?attr/selectableItemBackground"
     android:layout_margin="8dp"
     android:layout_height="wrap_content">
 

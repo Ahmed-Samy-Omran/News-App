@@ -8,37 +8,40 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.example.newsapp.R
+import com.example.newsapp.databinding.FragmentCatagoriesBinding
+import com.google.android.material.card.MaterialCardView
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CategoriesFragment:Fragment() {
+class CategoriesFragment : Fragment() {
 
-    // i create onViewCreated to work on it
-    private lateinit var recyclerView: RecyclerView
-    private val viewModel:CategoriesViewModel by viewModels()
+    private var _binding: FragmentCatagoriesBinding? = null
+    private val binding get() = _binding!! // Avoid memory leaks by referencing binding
 
+    private val viewModel: CategoriesViewModel by viewModels()
     private val adapter by lazy {
         CategoriesAdapter { category ->
             onCategoryClickListener?.onCategoryClick(category)
         }
     }
-    var onCategoryClickListener: OnCategoryClickListener?=null
+
+    var onCategoryClickListener: OnCategoryClickListener? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_catagories,container,false)
+    ): View {
+        _binding = FragmentCatagoriesBinding.inflate(inflater, container, false)
+        return binding.root
     }
-
-
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initRecyclerView()
         observeCategories()
+
+
     }
 
     private fun observeCategories() {
@@ -48,16 +51,15 @@ class CategoriesFragment:Fragment() {
     }
 
     private fun initRecyclerView() {
-        recyclerView = requireView().findViewById(R.id.recycler_view)
-        recyclerView.adapter = adapter
+        binding.recyclerView.adapter = adapter
     }
 
-
-
-
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null // Prevent memory leaks
+    }
 
     interface OnCategoryClickListener {
         fun onCategoryClick(category: Category)
     }
-
 }

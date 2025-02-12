@@ -9,14 +9,14 @@
         android:id="@+id/tab_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tabIndicator="@color/colorGreen"
         android:layout_marginTop="12dp"
-        app:tabMode="scrollable"
-        app:tabTextColor="@color/colorGreen"
-        app:tabSelectedTextColor="@color/white"
+        app:layout_constraintTop_toTopOf="parent"
         app:tabBackground="@drawable/tab_selector"
-        />
+        app:tabIndicator="@color/colorGreen"
+        app:tabMode="scrollable"
+        app:tabSelectedTextColor="@color/white"
+        app:tabTextColor="@color/colorGreen" />
+
     <ProgressBar
         android:id="@+id/progress_bar"
         android:layout_width="wrap_content"
@@ -32,11 +32,13 @@
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@+id/tab_layout"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tab_layout"
         tools:listitem="@layout/item_news"
+
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+

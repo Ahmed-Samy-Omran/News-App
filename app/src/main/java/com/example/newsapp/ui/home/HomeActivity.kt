@@ -10,7 +10,7 @@ import com.example.newsapp.R
 import com.example.newsapp.ui.categories.CategoriesFragment
 import com.example.newsapp.ui.categories.Category
 import com.example.newsapp.ui.news.NewsFragment
-import com.example.newsapp.ui.SettingsFragment
+import com.example.newsapp.ui.settings.SettingsFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 
